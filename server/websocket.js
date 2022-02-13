@@ -2,26 +2,24 @@ const ws = require("ws");
 
 const wsServer = new ws.Server({
   port: 5000,
-}, () => console.log("Server started!"))
+}, () => console.log("Server started on 5000"))
 
-wsServer.on("connection",  (ws) => {
-  ws.on("message", (message) => {
-    message = JSON.parse(message);
-    console.log(message)
+wsServer.on("connection", function connection(ws) {
+  ws.on("message", function (message) {
+    message = JSON.parse(message)
     switch (message.event) {
       case "message":
         broadcastMessage(message)
         break;
-      case "connection":
+      case 'connection':
         broadcastMessage(message)
         break;
     }
   })
 })
 
-function broadcastMessage(message) {
-  console.log(message)
+function broadcastMessage(message, id) {
   wsServer.clients.forEach(client => {
-    client.send(JSON.parse(message))
+      client.send(JSON.stringify(message))
   })
 }

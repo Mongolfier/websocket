@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 
 
@@ -32,59 +32,60 @@ const WebSock = () => {
     }
 
     socket.current.onerror = () => {
-      console.log("Socket ошибка")
+      console.log('Socket произошла ошибка')
     }
   }
 
   const sendMessage = async () => {
-    const message = {
-      username,
-      message: value,
-      id: Date.now(),
-      event: message,
-    }
-    socket.current.send(JSON.stringify(message))
-    setValue("")
+      const message = {
+          username,
+          message: value,
+          id: Date.now(),
+          event: 'message'
+      }
+      socket.current.send(JSON.stringify(message));
+      setValue('')
   }
 
-  if(!connected) {
+
+  if (!connected) {
     return (
       <div>
-        <input 
-          type="text"
+        <input
           value={username}
           onChange={e => setUsername(e.target.value)}
-          placeholder="Ваше имя?"
-        />
+          type="text"
+          placeholder="Введите ваше имя"/>
         <button onClick={connect}>Войти</button>
       </div>
     )
   }
 
   return (
-    <div>
-      <input 
-        type="text" 
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-      <button
-        onClick={sendMessage}
-      >
-        Отправить
-      </button>
+      <div className="center">
+        <input 
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          type="text"
+        />
+        <button onClick={sendMessage}>Отправить</button>
 
-      <div>
-        <ul>
-          {messages.map( (message) => {
-            return (
-              <li style={{border: "1px solid black;"}} key={message.id}>{message.message}</li>
-            )
-          })}
-        </ul>
+        <div className="messages">
+          {messages.map(mess =>
+            <div key={mess.id}>
+              {mess.event === 'connection'
+                ? <div className="connection_message">
+                  Пользователь {mess.username} подключился
+                </div>
+                : <div className="message">
+                  {mess.username}. {mess.message}
+                </div>
+              }
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  )
-}
+  );
+};
 
 export default WebSock;
